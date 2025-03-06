@@ -98,3 +98,24 @@ class Jugador(pygame.sprite.Sprite):
             return Bala(self.rect.centerx, self.rect.top)
         return None
 
+# Clase para las balas
+class Bala(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.imagen = pygame.Surface((4, 10))
+        self.imagen.fill(BLANCO)
+        self.image = self.imagen  # Añadido para compatibilidad con Pygame
+        self.rect = self.imagen.get_rect()
+        self.rect.centerx = x
+        self.rect.bottom = y
+        self.velocidad = -10
+
+    def update(self):  # Renombrado para compatibilidad con Pygame
+        self.actualizar()
+
+    def actualizar(self):
+        self.rect.y += self.velocidad
+        if self.rect.bottom < 0:
+            self.kill()
+
+
