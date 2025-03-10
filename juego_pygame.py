@@ -3,6 +3,8 @@ import random
 import math
 from enum import Enum
 import heapq
+import time
+
 
 # Inicialización de Pygame
 pygame.init()
@@ -118,4 +120,55 @@ class Bala(pygame.sprite.Sprite):
         if self.rect.bottom < 0:
             self.kill()
 
+
+# Clase para las ciudades
+class Ciudad(pygame.sprite.Sprite):
+    def __init__(self, x):
+        super().__init__()
+        self.imagen = pygame.Surface((60, 40))
+        self.imagen.fill(AZUL)
+        self.image = self.imagen  # Añadido para compatibilidad con Pygame
+        self.rect = self.imagen.get_rect()
+        self.rect.centerx = x
+        self.rect.bottom = ALTO_PANTALLA - 20
+
+
+# Clase para los enemigos
+class Enemigo(pygame.sprite.Sprite):
+    def __init__(self, ciudades_objetivo):
+        super().__init__()
+        self.imagen = pygame.Surface((30, 30))
+        self.imagen.fill(ROJO)
+        self.image = self.imagen  # Añadido para compatibilidad con Pygame
+        self.rect = self.imagen.get_rect()
+        self.rect.x = random.randint(0, ANCHO_PANTALLA - self.rect.width)
+        self.rect.y = -self.rect.height
+        self.velocidad = 2
+        self.ciudades_objetivo = ciudades_objetivo
+        self.objetivo_actual = random.choice(ciudades_objetivo) if ciudades_objetivo else None
+
+    def update(self):  # Renombrado para compatibilidad con Pygame
+        self.actualizar()
+
+    def actualizar(self):
+        if not self.objetivo_actual:
+            self.kill()
+            return
+
+        # Comportamiento simple: moverse hacia la ciudad objetivo
+        dx = self.objetivo_actual.rect.centerx - self.rect.centerx
+        dy = self.objetivo_actual.rect.centery - self.rect.centery
+
+        distancia = math.sqrt(dx ** 2 + dy ** 2)
+        if distancia != 0:
+            dx = dx / distancia * self.velocidad
+            dy = dy / distancia * self.velocidad
+
+        self.rect.x += dx
+        self.rect.y += dy
+
+        # Verificar si ha llegado a la parte inferior de la pantalla
+        if self.rect.top > ALTO_PANTALLA:
+            self.kill()
+            return
 
